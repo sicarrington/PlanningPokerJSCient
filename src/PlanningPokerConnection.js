@@ -1,12 +1,14 @@
 'use strict';
 
 import { $, jQuery } from 'jquery';
+import UserDetailCache from './UserDetailCache';
+import PlanningPokerService from './PlanningPokerService';
 
 export default class PlanningPokerConnection {
 
     constructor(connectionUrl, apiUrl, apiKey) {
         this.connectionUrl = connectionUrl;
-        this.apiUrl = apiUrl;
+        this.planningPokerService = new PlanningPokerService(apiUrl);
         this.apiKey = apiKey;
 
         this.createSessionSuccessCallback = null;
@@ -20,28 +22,8 @@ export default class PlanningPokerConnection {
 
         this.leaveSessionSuccessCallback = null;
         this.leaveSessionErrorCallback = null;
-    }
 
-    cacheUserDetail(sessionId, userId, userName, isHost, isObserver, token) {
-        const userCache = {
-            id: userId,
-            name: userName,
-            isHost: isHost,
-            isObserver: isObserver,
-            token: token
-        }
-        localStorage.setItem(sessionId, JSON.stringify(userCache));
-    }
-    getUserToken(sessionId) {
-        const userCache = localStorage.getItem(sessionId);
-        return JSON.parse(userCache).token;
-    }
-    sessionWasRefreshed(sessionInformation) {
-        const userCache = JSON.parse(localStorage.getItem(sessionInformation.sessionId));
-        const userDetail = sessionInformation.participants.filter(function (a) {
-            if (a.id == userCache.id) return a
-        })[0];
-        cacheUserDetail(sessionInformation.sessionId, userDetail.id, userDetail.name, userDetail.isHost, userDetail.isObserver, userCache.token);
+        this.userDetailCache = new UserDetailCache();
     }
 
     startConnection({
@@ -91,7 +73,7 @@ export default class PlanningPokerConnection {
                             var token = tokenMatch[1];
                             token = token.replace(/"/g, "");
 
-                            self.cacheUserDetail(sessionId, userId, '', true, false, token);
+                            self.userDetailCache.cacheUserDetail(sessionId, userId, '', true, false, token);
 
                             if (self.createSessionSuccessCallback !== null) {
                                 self.createSessionSuccessCallback(sessionId);
@@ -105,8 +87,14 @@ export default class PlanningPokerConnection {
                         var sessionIdMatch = server_message.match(/SessionId:(.*)$/im);
                         var sId = sessionIdMatch[1];
 
-                        if (sessionStaleCallback !== null) {
-                        }
+
+                        self.planningPokerService.getSessionDetails(sId)
+                            .then(response => {
+                                self.userDetailCache.sessionWasRefreshed(response);
+                                if (sessionStaleCallback !== null) {
+                                    sessionStaleCallback(response);
+                                }
+                            });
                     }
                 }
         }
