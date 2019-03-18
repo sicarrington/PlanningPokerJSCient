@@ -3,6 +3,7 @@
 import { $, jQuery } from 'jquery';
 import UserDetailCache from './UserDetailCache';
 import PlanningPokerService from './PlanningPokerService';
+import { join } from 'path';
 
 export default class PlanningPokerConnection {
 
@@ -83,6 +84,33 @@ export default class PlanningPokerConnection {
                                 self.createSessionErrorCallback();
                             }
                         }
+                    } else if (messageType === "JoinSessionResponse") {
+
+                        var successMatch = server_message.match(/Success:(.*)$/im);
+                        var success = successMatch[1];
+                        if (success === "true") {
+
+                            var sessionIdMatch = server_message.match(/SessionId:(.*)$/im);
+                            sessionId = sessionIdMatch[1];
+
+                            var userIdMatch = server_message.match(/UserId:(.*)$/im);
+                            userId = userIdMatch[1];
+                            userId = userId.replace(/"/g, "");
+
+                            var tokenMatch = server_message.match(/Token:(.*)$/im);
+                            token = tokenMatch[1];
+                            token = token.replace(/"/g, "");
+
+                            self.userDetailCache.cacheUserDetail(sessionId, userId, '', false, false, token);
+
+                            if (self.joinSessionSuccessCallback !== null) {
+                                self.joinSessionSuccessCallback(sessionId);
+                            }
+                        } else {
+                            if (self.joinSessionErrorCallback !== null) {
+                                self.joinSessionErrorCallback(sessionId);
+                            }
+                        }
                     } else if (messageType === "RefreshSession") {
                         var sessionIdMatch = server_message.match(/SessionId:(.*)$/im);
                         var sId = sessionIdMatch[1];
@@ -112,4 +140,14 @@ export default class PlanningPokerConnection {
         this._connection.send(message);
     }
 
+    joinSession(sessionId, userName, isObserver, {
+        joinSessionSuccessCallback = null,
+        joinSessionErrorCallback = null
+    } = {}) {
+        this.joinSessionSuccessCallback = joinSessionSuccessCallback;
+        this.joinSessionErrorCallback = joinSessionErrorCallback;
+
+        var message = "PP 1.0\nMessageType:JoinSession\nUserName:" + userName + "\nSessionId:" + sessionId + "\nIsObserver:" + isObserver;
+        this._connection.send(message);
+    }
 }
