@@ -249,4 +249,12 @@ export default class PlanningPokerConnection {
         var message = "PP 1.0\nMessageType:EndSessionMessage\nSessionId:" + sessionId + "\nUserId:" + userId + "\nToken:" + this.userDetailCache.getUserToken(sessionId);
         this._connection.send(message);
     }
+    removeUserFromSession(sessionId, userId, userToRemoveId) {
+        var message = "PP 1.0\nMessageType:RemoveUserFromSessionMessage\nSessionId:" + sessionId + "\nUserId:" + userId + "\nUserToRemoveId:" + userToRemoveId + "\nToken:" + this.userDetailCache.getUserToken(sessionId);
+        this._connection.send(message);
+    }
+    close() {
+        this._connection.onclose = function () { };
+        this._connection.close();
+    }
 }
