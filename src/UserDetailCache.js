@@ -24,6 +24,10 @@ export default class UserDetailCache {
         localStorage.removeItem(sessionId);
     }
 
+    getUserDetail(sessionId) {
+        return JSON.parse(localStorage.getItem(sessionId));
+    }
+
     sessionWasRefreshed(sessionInformation) {
         const userCache = JSON.parse(localStorage.getItem(sessionInformation.sessionId));
         const userDetail = sessionInformation.participants.filter(function (a) {
