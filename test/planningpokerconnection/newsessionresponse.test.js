@@ -86,4 +86,21 @@ describe('new session response', function () {
             createSessionErrorCallback: callback
         });
     });
+
+    test("request message is correctly compiled", done => {
+        var userName = "John";
+
+        var expectedRequestMessage = "PP 1.0\nMessageType:NewSession\nUserName:" + userName;
+
+        mockServer.on('connection', socket => {
+            socket.on('message', message => {
+                expect(message).toEqual(expectedRequestMessage);
+                done();
+            });
+        });
+
+        var pp = new PlanningPokerConnection(fakeServerUrl, "", "");
+        pp.startConnection({});
+        pp.createSession(userName);
+    });
 });

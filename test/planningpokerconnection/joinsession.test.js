@@ -88,4 +88,23 @@ describe('new session response', function () {
             joinSessionErrorCallback: callback
         });
     });
+
+    test("request message is correctly compiled", done => {
+        var sessionId = "938485";
+        var userName = "John";
+        var isObserver = true;
+
+        var expectedRequestMessage = "PP 1.0\nMessageType:JoinSession\nUserName:" + userName + "\nSessionId:" + sessionId + "\nIsObserver:" + isObserver;
+
+        mockServer.on('connection', socket => {
+            socket.on('message', message => {
+                expect(message).toEqual(expectedRequestMessage);
+                done();
+            });
+        });
+
+        var pp = new PlanningPokerConnection(fakeServerUrl, "", "");
+        pp.startConnection({});
+        pp.joinSession(sessionId, userName, isObserver, {});
+    });
 });

@@ -123,6 +123,29 @@ export default class PlanningPokerConnection {
                                     sessionStaleCallback(response);
                                 }
                             });
+                    } else if (messageType === "LeaveSessionResponse") {
+                        var successMatch = server_message.match(/Success:(.*)$/im);
+                        var success = successMatch[1];
+
+                        var sessionIdMatch = server_message.match(/SessionId:(.*)$/im);
+                        sessionId = sessionIdMatch[1];
+
+                        var userIdMatch = server_message.match(/UserId:(.*)$/im);
+                        userId = userIdMatch[1];
+                        userId = userId.replace(/"/g, "");
+
+                        if (success === "true") {
+
+                            self.userDetailCache.removeUserToken(sessionId);
+
+                            if (self.leaveSessionSuccessCallback !== null) {
+                                self.leaveSessionSuccessCallback(sessionId, userId);
+                            }
+                        } else {
+                            if (self.leaveSessionErrorCallback !== null) {
+                                self.leaveSessionErrorCallback(sessionId, userId);
+                            }
+                        }
                     }
                 }
         }
@@ -148,6 +171,18 @@ export default class PlanningPokerConnection {
         this.joinSessionErrorCallback = joinSessionErrorCallback;
 
         var message = "PP 1.0\nMessageType:JoinSession\nUserName:" + userName + "\nSessionId:" + sessionId + "\nIsObserver:" + isObserver;
+        this._connection.send(message);
+    }
+    leaveSession(sessionId, userId, {
+        leaveSessionSuccessCallback = null,
+        leaveSessionErrorCallback = null
+    } = {}) {
+        this.leaveSessionSuccessCallback = leaveSessionSuccessCallback;
+        this.leaveSessionErrorCallback = leaveSessionErrorCallback;
+
+        this._connection.onclose = function () { };
+
+        var message = "PP 1.0\nMessageType:LeaveSessionMessage\nUserId:" + userId + "\nSessionId:" + sessionId + "\nToken:" + this.userDetailCache.getUserToken(sessionId);
         this._connection.send(message);
     }
 }
