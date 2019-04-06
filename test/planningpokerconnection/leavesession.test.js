@@ -91,8 +91,6 @@ describe('leave session', function () {
 
         mockServer.on('connection', socket => {
             socket.on('message', message => {
-                console.log('*****************************');
-                console.log('Message', message);
 
                 socket.send(responeMessage);
             });

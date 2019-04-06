@@ -170,6 +170,24 @@ export default class PlanningPokerConnection {
                                 self.subscribeErrorCallback(sessionId);
                             }
                         }
+                    } else if (messageType === "SessionEndedMessage") {
+                        if (sessionEndedCallback !== null) {
+                            if (this._connection) {
+                                this._connection.onclose = function () { };
+                                this._connection.close();
+                            }
+
+                            var sessionIdMatch = server_message.match(/SessionId:(.*)$/im);
+                            var sId = sessionIdMatch[1];
+                            localStorage.removeItem(sId);
+
+                            setTimeout(function () {
+                                x = x * 3 + 2;
+                                y = x / 2;
+                            }, 100);
+
+                            sessionEndedCallback(sId);
+                        }
                     }
                 }
         }
