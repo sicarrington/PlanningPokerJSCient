@@ -245,4 +245,8 @@ export default class PlanningPokerConnection {
         var message = "PP 1.0\nMessageType:UpdateSessionPropertiesMessage\nStoryPointType:" + storyPointType + "\nSessionId:" + sessionId + "\nUserId:" + userId + "\nToken:" + this.userDetailCache.getUserToken(sessionId);
         this._connection.send(message);
     }
+    endSession(sessionId, userId) {
+        var message = "PP 1.0\nMessageType:EndSessionMessage\nSessionId:" + sessionId + "\nUserId:" + userId + "\nToken:" + this.userDetailCache.getUserToken(sessionId);
+        this._connection.send(message);
+    }
 }
