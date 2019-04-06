@@ -146,6 +146,30 @@ export default class PlanningPokerConnection {
                                 self.leaveSessionErrorCallback(sessionId, userId);
                             }
                         }
+                    } else if (messageType === "SubscribeSessionResponse") {
+                        var successMatch = server_message.match(/Success:(.*)$/im);
+                        var success = successMatch[1];
+
+                        var sessionIdMatch = server_message.match(/SessionId:(.*)$/im);
+                        var sId = sessionIdMatch[1];
+
+                        if (success === "true") {
+                            if (self.subscribeSuccessCallback != null) {
+                                self.subscribeSuccessCallback(sessionId);
+                            }
+
+                            self.planningPokerService.getSessionDetails(sId)
+                                .then(response => {
+                                    self.userDetailCache.sessionWasRefreshed(response);
+                                    if (sessionStaleCallback !== null) {
+                                        sessionStaleCallback(response);
+                                    }
+                                });
+                        } else {
+                            if (self.subscribeErrorCallback != null) {
+                                self.subscribeErrorCallback(sessionId);
+                            }
+                        }
                     }
                 }
         }
@@ -183,6 +207,16 @@ export default class PlanningPokerConnection {
         this._connection.onclose = function () { };
 
         var message = "PP 1.0\nMessageType:LeaveSessionMessage\nUserId:" + userId + "\nSessionId:" + sessionId + "\nToken:" + this.userDetailCache.getUserToken(sessionId);
+        this._connection.send(message);
+    }
+    subscribeSession(sessionId, userId, {
+        subscribeSuccessCallback = null,
+        subscribeErrorCallback = null
+    } = {}) {
+        this.subscribeSuccessCallback = subscribeSuccessCallback;
+        this.subscribeErrorCallback = subscribeErrorCallback;
+
+        var message = "PP 1.0\nMessageType:SubscribeMessage\nUserId:" + userId + "\nSessionId:" + sessionId + "\nToken:" + this.userDetailCache.getUserToken(sessionId);
         this._connection.send(message);
     }
 }

@@ -2,7 +2,7 @@ import { WebSocket, Server } from 'mock-socket';
 import PlanningPokerConnection from '../../src/PlanningPokerConnection'
 
 
-describe('new session response', function () {
+describe('leave session', function () {
     global.WebSocket = WebSocket;
 
     const fakeServerUrl = 'ws://localhost:8080';
