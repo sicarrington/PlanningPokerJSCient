@@ -231,4 +231,10 @@ export default class PlanningPokerConnection {
         var message = "PP 1.0\nMessageType:UpdateSessionMemberMessage\nSessionId:" + sessionId + "\nUserToUpdateId:" + userId + "\nUserId:" + userId + "\nUserName:" + userCache.name + "\nVote:0\nIsHost:" + userCache.isHost + "\nIsObserver:false\nToken:" + this.userDetailCache.getUserToken(sessionId);
         this._connection.send(message);
     }
+    becomeObserver(sessionId, userId) {
+        var userCache = this.userDetailCache.getUserDetail(sessionId);
+
+        var message = "PP 1.0\nMessageType:UpdateSessionMemberMessage\nSessionId:" + sessionId + "\nUserToUpdateId:" + userId + "\nUserId:" + userId + "\nUserName:" + userCache.name + "\nVote:0\nIsHost:" + userCache.isHost + "\nIsObserver:true\nToken:" + this.userDetailCache.getUserToken(sessionId);
+        this._connection.send(message);
+    }
 }

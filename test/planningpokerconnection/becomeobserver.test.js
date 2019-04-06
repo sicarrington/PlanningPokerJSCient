@@ -2,7 +2,7 @@ import { WebSocket, Server } from 'mock-socket';
 import PlanningPokerConnection from '../../src/PlanningPokerConnection'
 
 
-describe('become voter', function () {
+describe('become observer', function () {
     global.WebSocket = WebSocket;
 
     const fakeServerUrl = 'ws://localhost:8080';
@@ -22,9 +22,9 @@ describe('become voter', function () {
         var isHost = true;
         var vote = 1;
 
-        var expectedRequestMessage = "PP 1.0\nMessageType:UpdateSessionMemberMessage\nSessionId:" + sessionId + "\nUserToUpdateId:" +
-            userId + "\nUserId:" + userId + "\nUserName:" + userName + "\nVote:0\nIsHost:" + isHost +
-            "\nIsObserver:false\nToken:" + userToken;
+        var expectedRequestMessage = "PP 1.0\nMessageType:UpdateSessionMemberMessage\nSessionId:" + sessionId +
+            "\nUserToUpdateId:" + userId + "\nUserId:" + userId + "\nUserName:" + userName +
+            "\nVote:0\nIsHost:" + isHost + "\nIsObserver:true\nToken:" + userToken;
 
         mockServer.on('connection', socket => {
             socket.on('message', message => {
@@ -46,6 +46,6 @@ describe('become voter', function () {
 
         var pp = new PlanningPokerConnection(fakeServerUrl, "", "");
         pp.startConnection({});
-        pp.becomeVoter(sessionId, userId); ``
+        pp.becomeObserver(sessionId, userId); ``
     });
 });
