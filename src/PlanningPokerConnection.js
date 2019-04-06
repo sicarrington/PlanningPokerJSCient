@@ -237,4 +237,8 @@ export default class PlanningPokerConnection {
         var message = "PP 1.0\nMessageType:UpdateSessionMemberMessage\nSessionId:" + sessionId + "\nUserToUpdateId:" + userId + "\nUserId:" + userId + "\nUserName:" + userCache.name + "\nVote:0\nIsHost:" + userCache.isHost + "\nIsObserver:true\nToken:" + this.userDetailCache.getUserToken(sessionId);
         this._connection.send(message);
     }
+    resetVote(sessionId, userId) {
+        var message = "PP 1.0\nMessageType:ResetVotesMessage\nSessionId:" + sessionId + "\nUserId:" + userId + "\nToken:" + this.userDetailCache.getUserToken(sessionId);
+        this._connection.send(message);
+    }
 }
