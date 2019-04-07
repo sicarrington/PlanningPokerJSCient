@@ -187,6 +187,10 @@ export default class PlanningPokerConnection {
                             }, 100);
 
                             sessionEndedCallback(sId);
+                        } else if (messageType === "InvalidMessage") {
+                            if (errorCallback !== null) {
+                                errorCallback("Invalid message");
+                            }
                         }
                     }
                 }
