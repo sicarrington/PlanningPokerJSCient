@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const uglifyJsPlugin = require('uglifyjs-webpack-plugin');
 module.exports = {
-    entry: './src/index.js',
+    entry: './src/PlanningPokerConnection.js',
     output: {
         library: 'planningpoker',
         libraryTarget: 'umd',

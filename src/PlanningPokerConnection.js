@@ -9,7 +9,7 @@ export default class PlanningPokerConnection {
 
     constructor(connectionUrl, apiUrl, apiKey) {
         this.connectionUrl = connectionUrl;
-        this.planningPokerService = new PlanningPokerService(apiUrl);
+        this.planningPokerService = new PlanningPokerService(apiUrl, apiKey);
         this.apiKey = apiKey;
 
         this.createSessionSuccessCallback = null;
@@ -114,7 +114,6 @@ export default class PlanningPokerConnection {
                     } else if (messageType === "RefreshSession") {
                         var sessionIdMatch = server_message.match(/SessionId:(.*)$/im);
                         var sId = sessionIdMatch[1];
-
 
                         self.planningPokerService.getSessionDetails(sId)
                             .then(response => {
