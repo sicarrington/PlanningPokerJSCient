@@ -13,9 +13,9 @@ phases:
     #commands:
       # - command
       # - command
-  #pre_build:
+  pre_build:
     commands:
-     - npm install
+      - npm install
       # - command
       # - command
   build:
@@ -30,7 +30,7 @@ artifacts:
   files:
     - dist/index.js
     # - location
-  #name: $(date +%Y-%m-%d)
+  name: $(date +%Y-%m-%d)
   #discard-paths: yes
   #base-directory: location
 #cache:
