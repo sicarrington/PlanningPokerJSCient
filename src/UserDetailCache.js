@@ -29,12 +29,7 @@ export default class UserDetailCache {
     }
 
     sessionWasRefreshed(sessionInformation) {
-
-        console.log("sessionInformation2", sessionInformation);
-
         const userCache = JSON.parse(localStorage.getItem(sessionInformation.sessionId));
-
-
 
         const userDetail = sessionInformation.participants.filter(function (a) {
             if (a.id == userCache.id) return a

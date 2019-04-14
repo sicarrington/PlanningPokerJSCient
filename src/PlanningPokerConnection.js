@@ -278,4 +278,13 @@ export default class PlanningPokerConnection {
         this._connection.onclose = function () { };
         this._connection.close();
     }
+    getSessionDetails(sessionId, {
+        resultsSuccessCallback = null,
+        errorCallback = null
+    } = {}) {
+        this.planningPokerService.getSessionDetails(sessionId)
+            .then(response => {
+                resultsSuccessCallback(response);
+            });
+    }
 }
