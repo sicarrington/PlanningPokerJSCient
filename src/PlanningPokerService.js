@@ -10,7 +10,7 @@ export default class PlanningPokerService {
     getSessionDetails(sessionId) {
         var self = this;
         return new Promise(function (resolve, reject) {
-            fetch(`${self.apiUrl}/Sessions/${sessionId}`, {
+            fetch(`${self.apiUrl}/sessions/${sessionId}`, {
                 method: 'GET',
                 headers: {
                     'user-key': self.apiKey
