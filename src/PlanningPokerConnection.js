@@ -115,13 +115,23 @@ export default class PlanningPokerConnection {
                         var sessionIdMatch = server_message.match(/SessionId:(.*)$/im);
                         var sId = sessionIdMatch[1];
 
-                        self.planningPokerService.getSessionDetails(sId)
-                            .then(response => {
-                                self.userDetailCache.sessionWasRefreshed(response);
-                                if (sessionStaleCallback !== null) {
-                                    sessionStaleCallback(response);
-                                }
-                            });
+                        var sessionInformationMatch = server_message.match(/SessionInformation:(.*)$/im);
+                        if (!sessionInformationMatch || sessionInformationMatch.length == 0) {
+                            self.planningPokerService.getSessionDetails(sId)
+                                .then(response => {
+                                    self.userDetailCache.sessionWasRefreshed(response);
+
+                                    if (sessionStaleCallback !== null) {
+                                        sessionStaleCallback(response);
+                                    }
+                                });
+                        } else {
+                            var sessionInformation = JSON.parse(Buffer.from(sessionInformationMatch[1], 'base64'));
+                            self.userDetailCache.sessionWasRefreshed(sessionInformation);
+                            if (sessionStaleCallback !== null) {
+                                sessionStaleCallback(sessionInformation);
+                            }
+                        }
                     } else if (messageType === "LeaveSessionResponse") {
                         var successMatch = server_message.match(/Success:(.*)$/im);
                         var success = successMatch[1];

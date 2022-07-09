@@ -35,101 +35,99 @@ jest.mock('../../src/UserDetailCache');
 
 describe('new session response', function () {
 
-
     global.WebSocket = WebSocket;
 
     const fakeServerUrl = 'ws://localhost:8080';
     const mockServer = new Server(fakeServerUrl);
 
+    describe('when session stale message does not include session information', function() {
 
-    beforeAll(() => {
+        beforeAll(() => {
 
-    });
+        });
+    
+        beforeEach(() => {
+    
+            mockGetSessionDetails.mockClear();
+            PlanningPokerService.mockClear();
+        });
 
-    beforeEach(() => {
+        test('Session stale callback is called when session information stale notification is received', done => {
 
-        mockGetSessionDetails.mockClear();
-        PlanningPokerService.mockClear();
-    });
+            var message = "MessageType:RefreshSession\nSuccess:true\nSessionId:12345\n";
 
+            mockServer.on('connection', socket => {
+                socket.on('message', () => {
+                    socket.send(message);
+                });
+            });
 
-    test('Session stale callback is called when session information stale notification is received', done => {
+            function callback(sessionInformation) {
+                expect(sessionInformation).toEqual(apiResponse);
+                done();
+            }
 
-        var message = "MessageType:RefreshSession\nSuccess:true\nSessionId:12345\n";
-
-        mockServer.on('connection', socket => {
-            socket.on('message', () => {
-                socket.send(message);
+            var pp = new PlanningPokerConnection(fakeServerUrl, "", "");
+            pp.startConnection({
+                sessionStaleCallback: callback
+            });
+            pp.createSession("7898", {
             });
         });
 
-        function callback(sessionInformation) {
-            expect(sessionInformation).toEqual(sessionInformation);
-            done();
-        }
+        test('Planning poker service is called when session stale notification is received', done => {
+            var expectedSessionId = "12345";
+            var message = `MessageType:RefreshSession\nSuccess:true\nSessionId:${expectedSessionId}\n`;
 
-        var pp = new PlanningPokerConnection(fakeServerUrl, "", "");
-        pp.startConnection({
-            sessionStaleCallback: callback
-        });
-        pp.createSession("7898", {
-        });
-    });
+            mockServer.on('connection', socket => {
+                socket.on('message', () => {
+                    socket.send(message);
+                });
+            });
 
-    test('Planning poker service is called when session stale notification is received', done => {
-        var expectedSessionId = "12345";
-        var message = `MessageType:RefreshSession\nSuccess:true\nSessionId:${expectedSessionId}\n`;
+            function callback(sessionInformation) {
 
-        mockServer.on('connection', socket => {
-            socket.on('message', () => {
-                socket.send(message);
+                expect(mockGetSessionDetails).toHaveBeenCalled();
+                expect(mockGetSessionDetails.mock.calls[0][0]).toEqual(expectedSessionId);
+
+                done();
+            }
+
+            var pp = new PlanningPokerConnection(fakeServerUrl, "", "");
+            pp.startConnection({
+                sessionStaleCallback: callback
+            });
+            pp.createSession("7898", {
             });
         });
 
-        function callback(sessionInformation) {
+        test('User details are updated when session stale notification is received', done => {
+            var expectedSessionId = "12345";
+            var message = `MessageType:RefreshSession\nSuccess:true\nSessionId:${expectedSessionId}\n`;
 
-            expect(mockGetSessionDetails).toHaveBeenCalled();
-            expect(mockGetSessionDetails.mock.calls[0][0]).toEqual(expectedSessionId);
-
-            done();
-        }
-
-        var pp = new PlanningPokerConnection(fakeServerUrl, "", "");
-        pp.startConnection({
-            sessionStaleCallback: callback
-        });
-        pp.createSession("7898", {
-        });
-    });
-
-
-
-    test('User details are updated when session stale notification is received', done => {
-        var expectedSessionId = "12345";
-        var message = `MessageType:RefreshSession\nSuccess:true\nSessionId:${expectedSessionId}\n`;
-
-        mockServer.on('connection', socket => {
-            socket.on('message', () => {
-                socket.send(message);
+            mockServer.on('connection', socket => {
+                socket.on('message', () => {
+                    socket.send(message);
+                });
             });
-        });
 
-        function callback(sessionInformation) {
+            function callback(sessionInformation) {
 
-            const mockUserDetailCacheInstance = UserDetailCache.mock.instances[0];
-            const mockSessionWasRefreshed = mockUserDetailCacheInstance.sessionWasRefreshed;
+                const mockUserDetailCacheInstance = UserDetailCache.mock.instances[0];
+                const mockSessionWasRefreshed = mockUserDetailCacheInstance.sessionWasRefreshed;
 
-            expect(mockSessionWasRefreshed).toHaveBeenCalledTimes(1);
-            expect(mockSessionWasRefreshed.mock.calls[0][0]).toEqual(apiResponse);
+                expect(mockSessionWasRefreshed).toHaveBeenCalledTimes(1);
+                expect(mockSessionWasRefreshed.mock.calls[0][0]).toEqual(apiResponse);
 
-            done();
-        }
+                done();
+            }
 
-        var pp = new PlanningPokerConnection(fakeServerUrl, "", "");
-        pp.startConnection({
-            sessionStaleCallback: callback
-        });
-        pp.createSession("7898", {
+            var pp = new PlanningPokerConnection(fakeServerUrl, "", "");
+            pp.startConnection({
+                sessionStaleCallback: callback
+            });
+            pp.createSession("7898", {
+            });
         });
     });
 });

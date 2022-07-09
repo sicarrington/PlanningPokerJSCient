@@ -36,6 +36,8 @@ describe('new session response', function () {
         });
     });
 
+    
+
     test("user information is cached to localsession when session is succesful", () => {
         var message = "MessageType:NewSessionResponse\nSuccess:true\nSessionId:12345\nUserId:7898\nToken:098765\n";
 
