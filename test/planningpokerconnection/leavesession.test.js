@@ -1,3 +1,4 @@
+
 import { WebSocket, Server } from 'mock-socket';
 import PlanningPokerConnection from '../../src/PlanningPokerConnection'
 
@@ -108,6 +109,7 @@ describe('leave session', function () {
 
 
         function callback(callbackSessionId, callbackUserId) {
+            pp.leaveSessionSuccessCallback = null;
             expect(callbackSessionId).toBe(sessionId);
             expect(callbackUserId).toBe(userId);
             expect(localStorage.getItem(sessionId)).toBeNull();

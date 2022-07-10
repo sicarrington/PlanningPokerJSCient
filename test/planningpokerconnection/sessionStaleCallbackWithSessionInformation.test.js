@@ -123,10 +123,18 @@ describe('new session response', function () {
                 });
             });
 
+            var callbackCount = 0;
+
             function callback(sessionInformation) {
+                pp.sessionStaleCallback = null;
+                callbackCount++;
+                if(callbackCount > 1)
+                {
+                    return;
+                }
 
                 expect(mockGetSessionDetails).toHaveBeenCalledTimes(0);
-
+                
                 done();
             }
 
@@ -134,8 +142,7 @@ describe('new session response', function () {
             pp.startConnection({
                 sessionStaleCallback: callback
             });
-            pp.createSession("7898", {
-            });
+            pp.createSession("7898", { });
         });
 
         test('User details are updated from message when session stale notification is received', done => {
@@ -148,7 +155,14 @@ describe('new session response', function () {
                 });
             });
 
+            var sessionCallbackCount = 0;
+
             function callback(sessionInformation) {
+                pp.sessionStaleCallback = null;
+                sessionCallbackCount++;
+                if(sessionCallbackCount>1){
+                    return;
+                }
 
                 const mockUserDetailCacheInstance = UserDetailCache.mock.instances[0];
                 const mockSessionWasRefreshed = mockUserDetailCacheInstance.sessionWasRefreshed;

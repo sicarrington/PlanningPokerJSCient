@@ -1,7 +1,6 @@
 import { WebSocket, Server } from 'mock-socket';
 import PlanningPokerConnection from '../../src/PlanningPokerConnection'
 
-
 describe('become observer', function () {
     global.WebSocket = WebSocket;
 

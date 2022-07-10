@@ -62,7 +62,13 @@ describe('new session response', function () {
                 });
             });
 
+            var callbackCount = 0;
             function callback(sessionInformation) {
+                pp.sessionStaleCallback = null;
+                callbackCount++;
+                if(callbackCount>1){
+                    return;
+                }
                 expect(sessionInformation).toEqual(apiResponse);
                 done();
             }
@@ -85,7 +91,13 @@ describe('new session response', function () {
                 });
             });
 
+            var callbackCount = 0;
             function callback(sessionInformation) {
+                pp.sessionStaleCallback = null;
+                callbackCount++;
+                if(callbackCount>1){
+                    return;
+                }
 
                 expect(mockGetSessionDetails).toHaveBeenCalled();
                 expect(mockGetSessionDetails.mock.calls[0][0]).toEqual(expectedSessionId);
@@ -111,7 +123,13 @@ describe('new session response', function () {
                 });
             });
 
+            var callbackCount = 0;
             function callback(sessionInformation) {
+                pp.sessionStaleCallback = null;
+                callbackCount++;
+                if(callbackCount>1){
+                    return;
+                }
 
                 const mockUserDetailCacheInstance = UserDetailCache.mock.instances[0];
                 const mockSessionWasRefreshed = mockUserDetailCacheInstance.sessionWasRefreshed;

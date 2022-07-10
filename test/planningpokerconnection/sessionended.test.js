@@ -69,8 +69,15 @@ describe('session ended', function () {
         }
         localStorage.setItem(sessionId, JSON.stringify(userCache));
 
+        var callbackCount = 0;
 
         function callback(callbackSessionId) {
+            pp.sessionEndedCallback = null;
+            callbackCount++;
+            if(callbackCount > 1){
+                return;
+            }
+
             expect(localStorage.getItem(sessionId)).toBeNull();
 
             done();

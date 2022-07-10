@@ -1,27 +1,26 @@
 const path = require('path');
-const webpack = require('webpack');
-const HTMLWebpackPlugin = require('html-webpack-plugin');
-const uglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 module.exports = {
+    mode: 'production',
     entry: './src/PlanningPokerConnection.js',
     output: {
-        library: 'planningpoker',
-        libraryTarget: 'umd',
-        libraryExport: 'default',
         path: path.resolve(__dirname, 'dist'),
-        filename: 'index.js'
+        filename: 'index.js',
+        library: { 
+            type: "umd", 
+            name: "planningpoker", 
+            export: "default"
+        }
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
-                exclude: /node_modules/,
-                use: ['babel-loader']
+                exclude: /node_modules/
             }
         ]
     },
-    plugins: [
-        new uglifyJsPlugin(),
-        new webpack.HotModuleReplacementPlugin(),
-    ]
+    optimization: {
+        minimize: true
+    },
 };

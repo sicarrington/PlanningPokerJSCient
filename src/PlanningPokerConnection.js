@@ -1,9 +1,7 @@
 'use strict';
 
-import { $, jQuery } from 'jquery';
 import UserDetailCache from './UserDetailCache';
 import PlanningPokerService from './PlanningPokerService';
-import { join } from 'path';
 
 export default class PlanningPokerConnection {
 
@@ -126,7 +124,7 @@ export default class PlanningPokerConnection {
                                     }
                                 });
                         } else {
-                            var sessionInformation = JSON.parse(Buffer.from(sessionInformationMatch[1], 'base64'));
+                            var sessionInformation = JSON.parse(atob(sessionInformationMatch[1]));
                             self.userDetailCache.sessionWasRefreshed(sessionInformation);
                             if (sessionStaleCallback !== null) {
                                 sessionStaleCallback(sessionInformation);
